@@ -3,88 +3,98 @@ package com.JSCity.gr415st3;
 import java.util.ArrayList;
 import java.util.List;
 
+import eu.printingin3d.javascad.coords.Angles3d;
+import eu.printingin3d.javascad.models.Abstract3dModel;
 import eu.printingin3d.javascad.coords.Coords3d;
 import eu.printingin3d.javascad.coords.Dims3d;
-import eu.printingin3d.javascad.enums.Side;
-import eu.printingin3d.javascad.models.Abstract3dModel;
-import eu.printingin3d.javascad.models.Cube;
-import eu.printingin3d.javascad.models.Cylinder;
+import eu.printingin3d.javascad.models.*;
 import eu.printingin3d.javascad.tranzitions.Difference;
 import eu.printingin3d.javascad.tranzitions.Union;
 
-public class LegoBrick extends Union {
-	private static final double ONE_SEGMENT_WIDTH = 8.0;
-	private static final double HEIGHT = 9.6;
-	private static final double HORIZONTAL_GAP = 2*0.1;
-	private static final double WALL_THICKNESS = 1.5;
-	private static final double AXLE_INNER_DIAMETER = 4.75;
-	private static final double AXLE_OUTER_DIAMETER = 6.51;
-	private static final double AXLE_ONE_DIAMETER = 3.0;
-	private static final double KNOB_DIAMETER = 4.85;
-	private static final double KNOB_HEIGTH = 1.8;
-	
-	public LegoBrick(int xSize, int ySize) {
-		super(getModels(xSize, ySize));
-	}
+class HC_building extends Union {
 
-	private static List<Abstract3dModel> getModels(int xSize, int ySize) {
-		List<Abstract3dModel> models = new ArrayList();
-		Difference base = new Difference(
-						new Cube(new Dims3d(ONE_SEGMENT_WIDTH*xSize-HORIZONTAL_GAP, ONE_SEGMENT_WIDTH*ySize-HORIZONTAL_GAP, HEIGHT)),
-						new Cube(new Dims3d(ONE_SEGMENT_WIDTH*xSize-HORIZONTAL_GAP-WALL_THICKNESS*2, ONE_SEGMENT_WIDTH*ySize-HORIZONTAL_GAP-WALL_THICKNESS*2, HEIGHT-WALL_THICKNESS)).move(Coords3d.zOnly(-WALL_THICKNESS))						
-				);
-		models.add(base);
-		models.add(addAxles(xSize, ySize));
-		models.add(getKnobs(base, xSize, ySize));
-		return models;
-	}
 
-	private static Abstract3dModel getKnobs(Abstract3dModel base, int xSize, int ySize) {
-		List<Coords3d> moves = new ArrayList();
-		for (int x=0;x<xSize;x++) {
-			for (int y=0;y<ySize;y++) {
-				moves.add(new Coords3d((x-(xSize-1.0)/2.0)*ONE_SEGMENT_WIDTH, (y-(ySize-1.0)/2.0)*ONE_SEGMENT_WIDTH, 0.0));
-			}
-		}
-		return getKnob(base).moves(moves);
-	}
-	
-	private static Abstract3dModel addAxles(int xSize, int ySize) {
-		List<Coords3d> moves = new ArrayList();
-		if (xSize==1) {
-			for (int y=0;y<ySize-1;y++) {
-				moves.add(Coords3d.yOnly((y-(ySize-2.0)/2.0)*ONE_SEGMENT_WIDTH));
-			}
-			return getAxleOne().moves(moves);
-		}
-		else if (ySize==1) {
-			for (int x=0;x<xSize-1;x++) {
-				moves.add(Coords3d.xOnly((x-(xSize-2.0)/2.0)*ONE_SEGMENT_WIDTH));
-			}
-			return getAxleOne().moves(moves);
-		}
-		else {		
-			for (int x=0;x<xSize-1;x++) {
-				for (int y=0;y<ySize-1;y++) {
-					moves.add(new Coords3d((x-(xSize-2.0)/2.0)*ONE_SEGMENT_WIDTH, (y-(ySize-2.0)/2.0)*ONE_SEGMENT_WIDTH, 0.0));
-				}
-			}
-			return getAxle().moves(moves);
-		}
-	}
-	
-	private static Abstract3dModel getKnob(Abstract3dModel base) {
-		return new Cylinder(KNOB_HEIGTH, KNOB_DIAMETER/2.0).align(Side.TOP, base, false);
-	}
-	
-	private static Abstract3dModel getAxle() {
-		return new Difference(
-				new Cylinder(HEIGHT, AXLE_OUTER_DIAMETER/2.0),
-				new Cylinder(HEIGHT, AXLE_INNER_DIAMETER/2.0).move(Coords3d.zOnly(-0.01))
+	HC_building() {super(getModels());}
+
+	private static List<Abstract3dModel> getModels() {
+		//полная модель
+		List<Abstract3dModel> models = new ArrayList<Abstract3dModel>();
+
+		Union first = new Union(
+				//здание
+				new Cube(new Dims3d(1000, 1800, 400)).move(new Coords3d(0, 100, 105)),
+				new Cube(new Dims3d(1000, 650, 700)).move(new Coords3d(0, -1125, 255)),
+				new Cube(new Dims3d(480,500,250)).move(new Coords3d(-210,375,430)),
+				new Cube(new Dims3d(580,925,270)).move(new Coords3d(-210,-338,440)),
+				//крыша гаража
+
+				new Cube(new Dims3d(750,500,20)).rotate(new Angles3d(-35,0,0)).move(new Coords3d(125,-975,740)),
+				new Cube(new Dims3d(1000,500,20)).rotate(new Angles3d(35,0,0)).move(new Coords3d(0,-1275,740)),
+				new Cube(new Dims3d(400,700,20)).rotate(new Angles3d(0,45,0)).move(new Coords3d(370,-1125,740)),
+				//крыша здания
+				new Cube(new Dims3d(550,1900,20)).move(new Coords3d(195,150,415)).rotate(Angles3d.yOnly(15)),
+				new Cube(new Dims3d(1100,500,20)).move(new Coords3d(10,741,568)).rotate(Angles3d.xOnly(-15)),
+				new Cube(new Dims3d(50,900,100)).move(new Coords3d(-475,575,355)),
+				//крыша между гаражом и дачей
+				new Cube(new Dims3d(550,1275,20)).rotate(new Angles3d(0,45,0)).move(new Coords3d(-100,-514,765)),
+				new Cube(new Dims3d(550,1575,20)).rotate(new Angles3d(0,-45,0)).move(new Coords3d(-330,-665,765)),
+				new Cube(new Dims3d(580,20,320)).move(new Coords3d(-210,100,730)),
+
+				//крыша балкона
+				new Cube(new Dims3d(20,500,388)).rotate(new Angles3d(0,45,0)).move(new Coords3d(-340,380,680)),
+				new Cube(new Dims3d(20,500,388)).rotate(new Angles3d(0,-45,0)).move(new Coords3d(-80,380,680)),
+				new Cube(new Dims3d(500,20,260)).move(new Coords3d(-210,605,685))
+				//new Prism(500, 30, 0,4).move(new Coords3d(0, 0, 800))
 		);
-	}
-	
-	private static Abstract3dModel getAxleOne() {
-		return new Cylinder(HEIGHT, AXLE_ONE_DIAMETER/2.0);
+				//обрезание предметов
+		Difference second = new Difference(first,
+				//крыша между гаражом и дачей
+				new Cube(new Dims3d(200, 425, 200)).rotate(new Angles3d(-45,-45,0)).move(new Coords3d(-100, -975, 922)),
+				new Cube(new Dims3d(700, 100, 200)).rotate(new Angles3d(55,0,0)).move(new Coords3d(225, -1130, 923)),
+				new Cube(new Dims3d(100, 100, 200)).rotate(new Angles3d(55,0,0)).move(new Coords3d(-115, -1157, 942)),
+				new Cube(new Dims3d(100,1050,150)).rotate(new Angles3d(0,45,0)).move(new Coords3d(-130,-400,919)),
+				new Cube(new Dims3d(550,1580,210)).rotate(new Angles3d(0,-45,0)).move(new Coords3d(-410,-666,848)),
+				//крыша гаража
+				new Cube(new Dims3d(1050,500,350)).rotate(new Angles3d(35,0,0)).move(new Coords3d(0,-1375,896)),
+				new Cube(new Dims3d(400,700,200)).rotate(new Angles3d(0,45,0)).move(new Coords3d(446,-1125,820)),
+				new Cube(new Dims3d(400,500,250)).rotate(new Angles3d(-35,0,0)).move(new Coords3d(300,-900,853)),
+				//крыша здания
+				new Cube(new Dims3d(250,250,490)).rotate(new Angles3d(0,-45,0)).move(new Coords3d(0,-5,859)),
+				//балкон
+				new Cube(new Dims3d(250,50,388)).rotate(new Angles3d(0,45,0)).move(new Coords3d(-440,620,773)),
+				new Cube(new Dims3d(250,50,388)).rotate(new Angles3d(0,-45,0)).move(new Coords3d(20,620,773)),
+				new Cube(new Dims3d(550,500,180)).move(new Coords3d(195,850,515)).rotate(Angles3d.yOnly(15)),
+				new Cube(new Dims3d(1200,500,180)).move(new Coords3d(60,742,669)).rotate(Angles3d.xOnly(-15)),
+
+				new Cube(new Dims3d(440,450,200)).move(new Coords3d(-210,375,410)),
+				new Cube(new Dims3d(500,450,100)).move(new Coords3d(-205,375,490)),
+				new Cube(new Dims3d(440,450,100)).move(new Coords3d(-205,405,490)),
+
+				//окно гаража
+				new Cube(new Dims3d(970, 610, 400)).move(new Coords3d(0, -1125, 370)),
+				new Cube(new Dims3d(100,100,120)).move(new Coords3d(500,-1110,450)),
+				new Cylinder(30,50).rotate(new Angles3d(0,90,0)).move(new Coords3d(500,-1110,500)),
+				new Cube(new Dims3d(250, 100, 200)).move(new Coords3d(0, -1425, 450)),
+				//помещение дачи
+				new Cube(new Dims3d(500, 1450, 250)).move(new Coords3d(205, -90, 140)),//120
+				//3 окна дачи
+				new Cube(new Dims3d(100,200,90)).move(new Coords3d(500,-600,80)),
+				new Cube(new Dims3d(100,200,90)).move(new Coords3d(500,-300,80)),
+				new Cube(new Dims3d(100,200,90)).move(new Coords3d(500,0,80)),
+				new Cylinder(100,100).rotate(new Angles3d(0,90,0)).move(new Coords3d(500,-600,145)),
+				new Cylinder(100,100).rotate(new Angles3d(0,90,0)).move(new Coords3d(500,-300,145)),
+				new Cylinder(100,100).rotate(new Angles3d(0,90,0)).move(new Coords3d(500,0,145)),
+
+
+
+				new Cube(new Dims3d(300,50,315)).move(new Coords3d(265,975,100)),
+				new Cube(new Dims3d(300,50,275)).move(new Coords3d(265,925,120)),
+				new Cube(new Dims3d(300,50,230)).move(new Coords3d(265,875,142)),
+				new Cube(new Dims3d(300,177,180)).move(new Coords3d(265,763,167)),//265,
+				new Cube(new Dims3d(100,50,120)).move(new Coords3d(265,650,140)),
+				new Cylinder(100,50).rotate(new Angles3d(90,0,0)).move(new Coords3d(265,650,200))
+		);
+		models.add(second);
+		return models;
 	}
 }
