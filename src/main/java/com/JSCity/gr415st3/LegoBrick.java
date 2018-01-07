@@ -11,10 +11,10 @@ import eu.printingin3d.javascad.models.*;
 import eu.printingin3d.javascad.tranzitions.Difference;
 import eu.printingin3d.javascad.tranzitions.Union;
 
-class HC_building extends Union {
+class LegoBrick extends Union {
 
 
-	HC_building() {super(getModels());}
+    LegoBrick() {super(getModels());}
 
 	private static List<Abstract3dModel> getModels() {
 		//полная модель
